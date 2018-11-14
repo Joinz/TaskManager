@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">Task Manager</string>
+    <string name="et_task_name">Название</string>
+    <string name="tv_priority">Приоритет</string>
+    <string name="tvDot">•</string>
+</resources>
