@@ -39,5 +39,36 @@
 
     </LinearLayout>
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/darker_gray"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/tvDot"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/tvDot"
+            android:textSize="30sp"
+            android:layout_marginLeft="16dp"
+            />
+
+        <TextView
+            android:id="@+id/tvPriority"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/tv_priority"
+            android:textSize="14sp"
+            android:lineSpacingExtra="10sp"
+            android:layout_marginLeft="8dp"
+            android:background="@color/white"
+            />
+
+    </LinearLayout>
 
 </LinearLayout>
