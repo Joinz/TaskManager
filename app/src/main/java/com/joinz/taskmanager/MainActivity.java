@@ -44,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
 
         DividerItemDecoration did = new DividerItemDecoration(rv.getContext(), linearLayoutManager.getOrientation());
         rv.addItemDecoration(did);
+        rv.setHasFixedSize(true);
     }
 
     private void createMockData() {
