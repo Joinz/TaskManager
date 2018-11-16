@@ -13,7 +13,8 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Выполнить домашнее задание"
-        android:textSize="20sp"
+        android:textSize="16sp"
+        android:lineSpacingExtra="8sp"
         android:layout_margin="16dp"
         />
 
@@ -22,7 +23,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="•"
-        android:textSize="24sp"
+        android:textSize="32sp"
         android:layout_margin="16dp"
         />
 
