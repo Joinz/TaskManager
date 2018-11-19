@@ -28,22 +28,34 @@ public class NewTaskActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_task);
 
+        initViews();
+        addSpannable();
+        setImageButtonListener();
+
+    }
+
+    private void initViews() {
         etTaskName = findViewById(R.id.etTaskName);
         ibNewItem = findViewById(R.id.ibNewItem);
         tvDot = findViewById(R.id.tvDot);
+    }
 
-
+    private void addSpannable() {
         Spannable spannableText = new SpannableString("•");
         spannableText.setSpan(new ForegroundColorSpan(Color.RED), 0, 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         tvDot.setText(spannableText);
+    }
 
+    private void setImageButtonListener() {
         ibNewItem.setEnabled(false);
+
         ibNewItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Toast.makeText(NewTaskActivity.this, "User clicker", Toast.LENGTH_SHORT);
             }
-     });
+        });
+
         etTaskName.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
