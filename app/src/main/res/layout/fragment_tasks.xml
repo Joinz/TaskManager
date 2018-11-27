@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:listitem="@layout/task_item"/>
+
+    <RelativeLayout
+        android:id="@+id/rl_empty_page"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:visibility="invisible">
+
+        <ImageView
+            android:id="@+id/iv_empty_page"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/pic_svg"
+            android:layout_centerHorizontal="true"
+            android:contentDescription="@string/iv_empty_page"/>
+
+        <TextView
+            android:id="@+id/tv_empty_page"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/iv_empty_page"
+            android:layout_centerHorizontal="true"
+            android:textSize="16sp"
+            android:textColor="#de000000"
+            android:lineSpacingExtra="8sp"
+            android:text="@string/tv_empty_page"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tv_empty_page"
+            android:layout_centerHorizontal="true"
+            android:textSize="14sp"
+            android:textColor="#8b000000"
+            android:lineSpacingExtra="8sp"
+            android:text="@string/tv_empty_page2"/>
+
+
+    </RelativeLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fabAddTask"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:layout_margin="16dp"
+        android:src="@drawable/ic_add_white_24dp"/>
+
+</FrameLayout>

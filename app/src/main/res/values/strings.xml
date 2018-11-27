@@ -1,6 +1,16 @@
 <resources>
     <string name="app_name">Task Manager</string>
+
+    <string name="action_write_mail">Write Mail</string>
+
     <string name="et_task_name">Название</string>
     <string name="tv_priority">Приоритет</string>
+
     <string name="tvDot">•</string>
+    <string name="iv_empty_page">Empty page image</string>
+    <string name="tv_empty_page">Вы все сделали на сегодня!</string>
+    <string name="tv_empty_page2">Наслаждайтесь свободным вечером.</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

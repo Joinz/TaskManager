@@ -30,7 +30,9 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskViewHolder>{
         taskViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onTaskClickListener.onClick(tasks.get(taskViewHolder.getAdapterPosition()));
+                int adapterPosition = taskViewHolder.getAdapterPosition();
+                Task task = tasks.get(adapterPosition);
+                onTaskClickListener.onClick(task);
             }
         });
         return taskViewHolder;
@@ -46,5 +48,10 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskViewHolder>{
     @Override
     public int getItemCount() {
         return tasks.size();
+    }
+
+    public void addTask(Task task) {
+        tasks.add(task);
+        notifyItemInserted(tasks.size() - 1);
     }
 }
