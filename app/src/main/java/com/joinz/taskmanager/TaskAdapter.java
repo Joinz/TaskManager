@@ -13,7 +13,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskViewHolder>{
     private final Context context;
     private final OnTaskClickListener onTaskClickListener;
 
-    private final List<Task> tasks;
+    private List<Task> tasks;
 
     TaskAdapter(Context context, OnTaskClickListener onTaskClickListener, List<Task> tasks) {
         this.context = context;
@@ -50,8 +50,8 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskViewHolder>{
         return tasks.size();
     }
 
-    public void addTask(Task task) {
-        tasks.add(task);
-        notifyItemInserted(tasks.size() - 1);
+    public void setTasks(List<Task> tasks) {
+        this.tasks = tasks;
+        notifyDataSetChanged();
     }
 }

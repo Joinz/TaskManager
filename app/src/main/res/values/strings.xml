@@ -11,6 +11,9 @@
     <string name="tv_empty_page">Вы все сделали на сегодня!</string>
     <string name="tv_empty_page2">Наслаждайтесь свободным вечером.</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="btn_priority4">Приоритет 4</string>
+    <string name="btn_priority3">Приоритет 3</string>
+    <string name="btn_priority2">Приоритет 2</string>
+    <string name="btn_priority1">Приоритет 1</string>
+    <string name="tv_priority_text">Приоритет</string>
 </resources>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="280dp"
+    android:layout_height="320dp"
+    android:orientation="vertical"
+    android:gravity="center">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/tv_priority_text"
+        android:gravity="center"/>
+
+    <Button
+        android:id="@+id/btnPriority4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/btn_priority4"
+        android:layout_gravity="start"/>
+
+    <Button
+        android:id="@+id/btnPriority3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/btn_priority3"
+        android:layout_gravity="start"/>
+
+    <Button
+        android:id="@+id/btnPriority2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/btn_priority2"
+        android:layout_gravity="start"/>
+
+    <Button
+        android:id="@+id/btnPriority1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/btn_priority1"
+        android:layout_gravity="start"/>
+
+
+</LinearLayout>

@@ -1,26 +1,23 @@
 package com.joinz.taskmanager;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import java.util.HashMap;
-
 public class MainActivity extends AppCompatActivity {
 
     private ViewPager vpTabs;
     private TabLayout tlTabs;
-    public static HashMap<Integer, String> tabNames;
+    public static SparseArray<String> tabNames;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,9 +39,8 @@ public class MainActivity extends AppCompatActivity {
         tlTabs = findViewById(R.id.tlTabs);
     }
 
-    @SuppressLint("UseSparseArrays")
     private void initTabs() {
-        tabNames = new HashMap<>();
+        tabNames = new SparseArray<>();
         tabNames.put(0, "Задачи");
         tabNames.put(1, "Продуктивность");
 
