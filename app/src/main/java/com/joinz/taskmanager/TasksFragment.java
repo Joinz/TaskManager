@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +18,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TasksFragment extends Fragment {
+public class TasksFragment extends Fragment implements RecyclerItemTouchHelperListener {
 
     private View rlEmptyPage;
     private RecyclerView rv;
@@ -67,6 +68,9 @@ public class TasksFragment extends Fragment {
         DividerItemDecoration did = new DividerItemDecoration(rv.getContext(), linearLayoutManager.getOrientation());
         rv.addItemDecoration(did);
         rv.setHasFixedSize(true);
+
+        ItemTouchHelper.SimpleCallback itemTouchHelperCallback = new RecyclerItemTouchHelper(0, ItemTouchHelper.RIGHT, this);
+        new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(rv);
     }
 
     private void initFab(View view) {
@@ -87,5 +91,13 @@ public class TasksFragment extends Fragment {
         } else {
             rlEmptyPage.setVisibility(View.GONE);
         }
+    }
+
+    @Override
+    public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction, int position) {
+        Task task = taskAdapter.getTask(position);
+        App.getInstance().getDatabase().taskDao().delete(task);
+        taskAdapter.removeTask(viewHolder.getAdapterPosition());
+        isEmptyPage();
     }
 }
