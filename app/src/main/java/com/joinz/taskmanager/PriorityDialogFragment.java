@@ -14,6 +14,7 @@ import android.widget.Button;
 public class PriorityDialogFragment extends DialogFragment {
 
     public static final String TAG = "PriorityDialogFragment";
+    @Nullable
     private PriorityDialogListener priorityDialogListener;
 
     public static PriorityDialogFragment newInstance() {
@@ -48,6 +49,12 @@ public class PriorityDialogFragment extends DialogFragment {
         btnListener(btn2, 2);
         btnListener(btn3, 3);
         btnListener(btn4, 4);
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        priorityDialogListener = null;
     }
 
     public void btnListener(Button button, final int priority) {

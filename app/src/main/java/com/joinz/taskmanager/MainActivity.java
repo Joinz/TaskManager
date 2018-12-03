@@ -17,7 +17,13 @@ public class MainActivity extends AppCompatActivity {
 
     private ViewPager vpTabs;
     private TabLayout tlTabs;
-    public static SparseArray<String> tabNames;
+    public SparseArray<String> tabNames;
+
+    public MainActivity() {
+        tabNames = new SparseArray<>();
+        tabNames.put(0, "Задачи");
+        tabNames.put(1, "Продуктивность");
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,10 +46,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initTabs() {
-        tabNames = new SparseArray<>();
-        tabNames.put(0, "Задачи");
-        tabNames.put(1, "Продуктивность");
-
         FragmentManager supportFragmentManager = getSupportFragmentManager();
         TabsFragmentAdapter adapter = new TabsFragmentAdapter(supportFragmentManager);
         vpTabs.setAdapter(adapter);

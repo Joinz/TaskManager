@@ -1,6 +1,5 @@
 package com.joinz.taskmanager;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -28,6 +27,7 @@ public class NewTaskFragment extends Fragment {
     private TextView tvPriority;
     private TextView tvDot;
     private int priority = 0;
+    private PriorityDialogFragment priorityDialogFragment;
 
     public static NewTaskFragment newInstance() {
         return new NewTaskFragment();
@@ -42,15 +42,7 @@ public class NewTaskFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         initViews(view);
         addSpannable();
-        setImageButtonListener();
-        tvPriority.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                PriorityDialogFragment priorityDialogFragment = PriorityDialogFragment.newInstance();
-                priorityDialogFragment.show(getChildFragmentManager(), PriorityDialogFragment.TAG);
-            }
-        });
-
+        setListeners();
     }
 
     private void initViews(View view) {
@@ -67,7 +59,7 @@ public class NewTaskFragment extends Fragment {
         tvDot.setText(spannableText);
     }
 
-    private void setImageButtonListener() {
+    private void setListeners() {
         ibNewItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -93,6 +85,16 @@ public class NewTaskFragment extends Fragment {
             @Override
             public void afterTextChanged(Editable editable) {
                 ibNewItem.setEnabled(!TextUtils.isEmpty(editable));
+            }
+        });
+
+        tvPriority.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (priorityDialogFragment == null) {
+                    priorityDialogFragment = PriorityDialogFragment.newInstance();
+                }
+                priorityDialogFragment.show(getChildFragmentManager(), PriorityDialogFragment.TAG);
             }
         });
     }

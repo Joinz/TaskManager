@@ -29,8 +29,9 @@ public class TabsFragmentAdapter extends FragmentPagerAdapter {
     @Nullable
     @Override
     public CharSequence getPageTitle(int position) {
-        if (position <= MainActivity.tabNames.size()) {
-            return MainActivity.tabNames.get(position);
+        MainActivity mainActivity = new MainActivity();
+        if (position <= mainActivity.tabNames.size()) {
+            return mainActivity.tabNames.get(position);
         } else {
             return null;
         }

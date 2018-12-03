@@ -2,6 +2,7 @@ package com.joinz.taskmanager;
 
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -13,6 +14,7 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -25,6 +27,7 @@ public class TasksFragment extends Fragment implements RecyclerItemTouchHelperLi
     private FloatingActionButton fabAddTask;
     private List<Task> tasks = new ArrayList<>();
     private TaskAdapter taskAdapter;
+    private ProductivityFragment productivityFragment;
 
     public TasksFragment() {
         // Required empty public constructor
@@ -96,7 +99,19 @@ public class TasksFragment extends Fragment implements RecyclerItemTouchHelperLi
     @Override
     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction, int position) {
         Task task = taskAdapter.getTask(position);
-        App.getInstance().getDatabase().taskDao().delete(task);
+            App.getInstance().getDatabase().taskDao().delete(task);
+        if (getActivity() != null) {
+            PersistantStorage.init(getActivity());
+            int tasksDone = PersistantStorage.getProperty(ProductivityFragment.TASKS_DONE);
+            PersistantStorage.addProperty(ProductivityFragment.TASKS_DONE, ++tasksDone);
+            if (productivityFragment == null) {
+                productivityFragment = ProductivityFragment.newInstance();
+            }
+            if (productivityFragment.getActivity() != null) {
+                TextView tvTasksDone = productivityFragment.getActivity().findViewById(R.id.tvTasksDone);
+                productivityFragment.setTasksDone(tvTasksDone);
+            }
+        }
         taskAdapter.removeTask(viewHolder.getAdapterPosition());
         isEmptyPage();
     }
