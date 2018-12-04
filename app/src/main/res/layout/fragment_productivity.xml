@@ -13,6 +13,8 @@
     <TextView
         android:id="@+id/tvTasksDone"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        tools:text="@string/tv_tasks_done"
+        android:gravity="center"/>
 
 </FrameLayout>

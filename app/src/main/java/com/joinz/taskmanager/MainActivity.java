@@ -7,47 +7,36 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ProductivityChangedListener {
 
+    Toolbar myToolbar;
     private ViewPager vpTabs;
     private TabLayout tlTabs;
-    public SparseArray<String> tabNames;
-
-    public MainActivity() {
-        tabNames = new SparseArray<>();
-        tabNames.put(0, "Задачи");
-        tabNames.put(1, "Продуктивность");
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        initToolbar();
         initViews();
+        setSupportActionBar(myToolbar);
         initTabs();
     }
 
-    private void initToolbar() {
-        Toolbar myToolbar = findViewById(R.id.my_toolbar);
-        setSupportActionBar(myToolbar);
-    }
-
     private void initViews() {
+        myToolbar = findViewById(R.id.my_toolbar);
         vpTabs = findViewById(R.id.vpTabs);
         tlTabs = findViewById(R.id.tlTabs);
     }
 
     private void initTabs() {
         FragmentManager supportFragmentManager = getSupportFragmentManager();
-        TabsFragmentAdapter adapter = new TabsFragmentAdapter(supportFragmentManager);
+        TabsFragmentAdapter adapter = new TabsFragmentAdapter(supportFragmentManager, this);
         vpTabs.setAdapter(adapter);
         tlTabs.setupWithViewPager(vpTabs);
     }
@@ -80,4 +69,12 @@ public class MainActivity extends AppCompatActivity {
         sendMail.setType("message/rfc822");
         startActivity(Intent.createChooser(sendMail, "Send mail with:"));
     }
+
+    @Override
+    public void onProductivityChanged() {
+        TabsFragmentAdapter adapter = (TabsFragmentAdapter) vpTabs.getAdapter();
+        ProductivityFragment fragment = (((ProductivityFragment) adapter.getItem(1)));
+        fragment.setTasksDone();
+    }
+
 }

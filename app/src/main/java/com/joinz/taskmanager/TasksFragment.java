@@ -2,7 +2,6 @@ package com.joinz.taskmanager;
 
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -14,7 +13,6 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -98,21 +96,23 @@ public class TasksFragment extends Fragment implements RecyclerItemTouchHelperLi
 
     @Override
     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction, int position) {
-        Task task = taskAdapter.getTask(position);
-            App.getInstance().getDatabase().taskDao().delete(task);
         if (getActivity() != null) {
             PersistantStorage.init(getActivity());
-            int tasksDone = PersistantStorage.getProperty(ProductivityFragment.TASKS_DONE);
-            PersistantStorage.addProperty(ProductivityFragment.TASKS_DONE, ++tasksDone);
-            if (productivityFragment == null) {
-                productivityFragment = ProductivityFragment.newInstance();
-            }
-            if (productivityFragment.getActivity() != null) {
-                TextView tvTasksDone = productivityFragment.getActivity().findViewById(R.id.tvTasksDone);
-                productivityFragment.setTasksDone(tvTasksDone);
-            }
+            Task task = taskAdapter.getTask(position);
+            App.getInstance().getDatabase().taskDao().delete(task);
+            taskAdapter.removeTask(viewHolder.getAdapterPosition());
+
+            isEmptyPage();
+            addDoneTaskPref();
         }
-        taskAdapter.removeTask(viewHolder.getAdapterPosition());
-        isEmptyPage();
+    }
+
+    private void addDoneTaskPref() {
+        int tasksDone = PersistantStorage.getProperty(ProductivityFragment.TASKS_DONE);
+        PersistantStorage.addProperty(ProductivityFragment.TASKS_DONE, ++tasksDone);
+        if (getActivity() instanceof ProductivityChangedListener) {
+            ((ProductivityChangedListener) getActivity()).onProductivityChanged();
+            Toast.makeText(getContext(), "addDoneTaskPref() from TasksFragment", Toast.LENGTH_SHORT).show();
+        }
     }
 }

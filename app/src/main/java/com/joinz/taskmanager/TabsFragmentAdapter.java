@@ -1,14 +1,27 @@
 package com.joinz.taskmanager;
 
+import android.content.Context;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.util.SparseArray;
 
 public class TabsFragmentAdapter extends FragmentPagerAdapter {
 
-    public TabsFragmentAdapter(FragmentManager fm) {
+    private final SparseArray<String> tabNames = new SparseArray<>();
+    private Context context;
+    private ProductivityFragment productivityFragment;
+
+    public TabsFragmentAdapter(FragmentManager fm, Context context) {
         super(fm);
+        this.context = context;
+        initTabNames();
+    }
+
+    private void initTabNames() {
+        tabNames.put(0, context.getString(R.string.tl_tasks));
+        tabNames.put(1, context.getString(R.string.tl_productivity));
     }
 
     @Override
@@ -16,24 +29,22 @@ public class TabsFragmentAdapter extends FragmentPagerAdapter {
         if (position == 0) {
             return TasksFragment.newInstance();
         } else if (position == 1) {
-            return ProductivityFragment.newInstance();
+            if (productivityFragment == null) {
+                productivityFragment = ProductivityFragment.newInstance();
+            }
+            return productivityFragment;
         }
         return null;
     }
 
     @Override
     public int getCount() {
-        return 2;
+        return tabNames.size();
     }
 
     @Nullable
     @Override
     public CharSequence getPageTitle(int position) {
-        MainActivity mainActivity = new MainActivity();
-        if (position <= mainActivity.tabNames.size()) {
-            return mainActivity.tabNames.get(position);
-        } else {
-            return null;
-        }
+        return tabNames.get(position);
     }
 }

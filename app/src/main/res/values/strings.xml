@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">Task Manager</string>
 
+    <string name="tl_tasks">Задачи</string>
+    <string name="tl_productivity">Продуктивность</string>
+
     <string name="action_write_mail">Write Mail</string>
 
     <string name="et_task_name">Название</string>
@@ -17,4 +20,5 @@
     <string name="btn_priority1">Приоритет 1</string>
     <string name="tv_priority_text">Приоритет</string>
     <string name="tv_tasks_done">задач выполнено</string>
+
 </resources>

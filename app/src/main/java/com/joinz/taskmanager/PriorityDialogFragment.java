@@ -61,7 +61,9 @@ public class PriorityDialogFragment extends DialogFragment {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                priorityDialogListener.onPriorityChosen(priority);
+                if (priorityDialogListener != null) {
+                    priorityDialogListener.onPriorityChosen(priority);
+                }
                 getDialog().cancel();
             }
         });
