@@ -1,4 +1,4 @@
-package com.joinz.taskmanager;
+package com.joinz.taskmanager.features.tasklist;
 
 import android.support.v7.widget.RecyclerView;
 

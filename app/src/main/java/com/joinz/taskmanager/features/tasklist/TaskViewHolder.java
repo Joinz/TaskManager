@@ -1,9 +1,12 @@
-package com.joinz.taskmanager;
+package com.joinz.taskmanager.features.tasklist;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
+
+import com.joinz.taskmanager.R;
+import com.joinz.taskmanager.db.Task;
 
 public class TaskViewHolder extends RecyclerView.ViewHolder {
     private TextView tvTask;

@@ -1,4 +1,4 @@
-package com.joinz.taskmanager;
+package com.joinz.taskmanager.features.main;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,6 +11,10 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
+
+import com.joinz.taskmanager.features.productivity.ProductivityChangedListener;
+import com.joinz.taskmanager.features.productivity.ProductivityFragment;
+import com.joinz.taskmanager.R;
 
 public class MainActivity extends AppCompatActivity implements ProductivityChangedListener {
 
@@ -60,6 +64,15 @@ public class MainActivity extends AppCompatActivity implements ProductivityChang
         }
     }
 
+    public int getTaskColor(int priority) {
+        switch (priority) {
+            case 4: return this.getResources().getColor(R.color.orangey_red);
+            case 3: return this.getResources().getColor(R.color.sun_yellow);
+            case 2: return this.getResources().getColor(R.color.viridian);
+            case 1: return this.getResources().getColor(R.color.clear_blue);
+            default: return this.getResources().getColor(R.color.clear_blue);
+        }
+    }
     private void sendMail() {
         String text = "Test message from toolbar";
         Intent sendMail = new Intent(Intent.ACTION_SEND);

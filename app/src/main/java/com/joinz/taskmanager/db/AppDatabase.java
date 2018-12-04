@@ -1,4 +1,4 @@
-package com.joinz.taskmanager;
+package com.joinz.taskmanager.db;
 
 import android.arch.persistence.room.Database;
 import android.arch.persistence.room.RoomDatabase;

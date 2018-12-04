@@ -5,11 +5,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recycler_view"
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/srTasks"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        tools:listitem="@layout/task_item"/>
+        android:layout_height="wrap_content">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:listitem="@layout/task_item"/>
+
+    </android.support.v4.widget.SwipeRefreshLayout>
 
     <RelativeLayout
         android:id="@+id/rl_empty_page"

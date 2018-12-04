@@ -1,4 +1,4 @@
-package com.joinz.taskmanager;
+package com.joinz.taskmanager.db;
 
 import android.app.Application;
 import android.arch.persistence.room.Room;
@@ -6,7 +6,7 @@ import android.arch.persistence.room.Room;
 public class App extends Application {
 
     public static App instance;
-    private  AppDatabase database;
+    private AppDatabase database;
 
     @Override
     public void onCreate() {

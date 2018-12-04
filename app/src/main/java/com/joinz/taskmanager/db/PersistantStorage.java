@@ -1,4 +1,4 @@
-package com.joinz.taskmanager;
+package com.joinz.taskmanager.db;
 
 import android.annotation.SuppressLint;
 import android.content.Context;

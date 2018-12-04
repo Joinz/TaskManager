@@ -16,28 +16,40 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/btn_priority4"
-        android:layout_gravity="start"/>
+        android:layout_gravity="start"
+        android:textSize="16sp"
+        android:layout_margin="16dp"
+        android:background="?android:attr/selectableItemBackground"/>
 
     <Button
         android:id="@+id/btnPriority3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/btn_priority3"
-        android:layout_gravity="start"/>
+        android:layout_gravity="start"
+        android:textSize="16sp"
+        android:layout_margin="16dp"
+        android:background="?android:attr/selectableItemBackground"/>
 
     <Button
         android:id="@+id/btnPriority2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/btn_priority2"
-        android:layout_gravity="start"/>
+        android:layout_gravity="start"
+        android:textSize="16sp"
+        android:layout_margin="16dp"
+        android:background="?android:attr/selectableItemBackground"/>
 
     <Button
         android:id="@+id/btnPriority1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/btn_priority1"
-        android:layout_gravity="start"/>
+        android:layout_gravity="start"
+        android:textSize="16sp"
+        android:layout_margin="16dp"
+        android:background="?android:attr/selectableItemBackground"/>
 
 
 </LinearLayout>

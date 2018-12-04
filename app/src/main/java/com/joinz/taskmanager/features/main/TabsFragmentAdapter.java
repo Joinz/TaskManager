@@ -1,4 +1,4 @@
-package com.joinz.taskmanager;
+package com.joinz.taskmanager.features.main;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
@@ -6,6 +6,10 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.util.SparseArray;
+
+import com.joinz.taskmanager.features.productivity.ProductivityFragment;
+import com.joinz.taskmanager.R;
+import com.joinz.taskmanager.features.tasklist.TasksFragment;
 
 public class TabsFragmentAdapter extends FragmentPagerAdapter {
 

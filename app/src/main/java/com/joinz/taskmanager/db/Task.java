@@ -1,4 +1,4 @@
-package com.joinz.taskmanager;
+package com.joinz.taskmanager.db;
 
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
@@ -27,11 +27,11 @@ public class Task  {
 
     public static int getColor(int priority) {
         switch (priority) {
-            case 4: return Color.RED;
-            case 3: return  Color.MAGENTA;
-            case 2: return Color.GREEN;
-            case 1: return Color.GRAY;
-            default: return Color.GREEN;
+            case 4: return Color.parseColor("f44336");
+            case 3: return  Color.parseColor("#fdd735");
+            case 2: return Color.parseColor("#21897b");
+            case 1: return Color.parseColor("#2396f3");
+            default: return Color.parseColor("#fdd735");
         }
     }
 

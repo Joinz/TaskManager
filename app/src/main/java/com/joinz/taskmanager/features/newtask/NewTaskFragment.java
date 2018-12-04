@@ -1,9 +1,10 @@
-package com.joinz.taskmanager;
+package com.joinz.taskmanager.features.newtask;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.Editable;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -18,6 +19,11 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.joinz.taskmanager.R;
+import com.joinz.taskmanager.db.App;
+import com.joinz.taskmanager.db.AppDatabase;
+import com.joinz.taskmanager.db.Task;
 
 public class NewTaskFragment extends Fragment {
 

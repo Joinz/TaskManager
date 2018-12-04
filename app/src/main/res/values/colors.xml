@@ -3,10 +3,18 @@
     <!--<color name="colorPrimary">#008577</color>-->
     <!--<color name="colorPrimaryDark">#00574B</color>-->
     <!--<color name="colorAccent">#D81B60</color>-->
+
+    <color name="orangey_red">#f44336</color>
+    <color name="sun_yellow">#fdd735</color>
+    <color name="viridian">#21897b</color>
+    <color name="clear_blue">#2396f3</color>
+
     <color name="black_new_item_hint">#61000000</color>
     <color name="white">#FFF</color>
+    <color name="black">#de000000</color>
     <color name="french_blue">#3f51b5</color>
     <color name="dusk_blue">#2f3e9e</color>
     <color name="darkish_pink">#ef4481</color>
+    <color name="grey">#757575</color>
 
 </resources>

@@ -1,9 +1,11 @@
-package com.joinz.taskmanager;
+package com.joinz.taskmanager.features.newtask;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+
+import com.joinz.taskmanager.R;
 
 
 public class NewTaskActivity extends AppCompatActivity implements PriorityDialogListener {

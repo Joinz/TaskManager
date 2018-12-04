@@ -1,11 +1,15 @@
-package com.joinz.taskmanager;
+package com.joinz.taskmanager.features.tasklist;
 
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,6 +19,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.joinz.taskmanager.db.PersistantStorage;
+import com.joinz.taskmanager.features.productivity.ProductivityChangedListener;
+import com.joinz.taskmanager.features.productivity.ProductivityFragment;
+import com.joinz.taskmanager.R;
+import com.joinz.taskmanager.db.App;
+import com.joinz.taskmanager.db.AppDatabase;
+import com.joinz.taskmanager.db.Task;
+import com.joinz.taskmanager.features.newtask.NewTaskActivity;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,10 +35,10 @@ public class TasksFragment extends Fragment implements RecyclerItemTouchHelperLi
 
     private View rlEmptyPage;
     private RecyclerView rv;
+    private SwipeRefreshLayout srTasks;
     private FloatingActionButton fabAddTask;
     private List<Task> tasks = new ArrayList<>();
     private TaskAdapter taskAdapter;
-    private ProductivityFragment productivityFragment;
 
     public TasksFragment() {
         // Required empty public constructor
@@ -37,20 +50,21 @@ public class TasksFragment extends Fragment implements RecyclerItemTouchHelperLi
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_tasks, container, false);
+        return inflater.inflate(R.layout.fragment_tasks, container, false);
+    }
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         initRecyclerView(view);
+        initSwipeRefresh(view);
         initFab(view);
-
-        return view;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        AppDatabase db = App.getInstance().getDatabase();
-        taskAdapter.setTasks(db.taskDao().getAll());
-        isEmptyPage();
+        loadTasksFromDb();
     }
 
     private void initRecyclerView(View view) {
@@ -74,6 +88,16 @@ public class TasksFragment extends Fragment implements RecyclerItemTouchHelperLi
         new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(rv);
     }
 
+    private void initSwipeRefresh(View view) {
+        srTasks = view.findViewById(R.id.srTasks);
+        srTasks.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                loadTasksFromDb();
+            }
+        });
+    }
+
     private void initFab(View view) {
         fabAddTask = view.findViewById(R.id.fabAddTask);
         fabAddTask.setOnClickListener(new View.OnClickListener() {
@@ -84,6 +108,22 @@ public class TasksFragment extends Fragment implements RecyclerItemTouchHelperLi
                 }
             }
         });
+    }
+
+    private void loadTasksFromDb() {
+        FragmentActivity activity = getActivity();
+        if (activity != null) {
+            AppDatabase db = App.getInstance().getDatabase();
+            taskAdapter.setTasks(db.taskDao().getAll());
+            isEmptyPage();
+
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    srTasks.setRefreshing(false);
+                }
+            }, 2000);
+        }
     }
 
     public void isEmptyPage() {
