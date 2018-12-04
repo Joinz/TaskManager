@@ -1,117 +1,85 @@
 package com.joinz.taskmanager;
 
-import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
+import android.annotation.SuppressLint;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.view.ViewPager;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.Toast;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
 
-    private RecyclerView rv;
-    private List<Task> tasks = new ArrayList<>();
+    private ViewPager vpTabs;
+    private TabLayout tlTabs;
+    public static HashMap<Integer, String> tabNames;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        createMockData();
-        initRecyclerView();
+        initToolbar();
+        initViews();
+        initTabs();
     }
 
-    private void initRecyclerView() {
-        rv = findViewById(R.id.recycler_view);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        rv.setLayoutManager(linearLayoutManager);
-        rv.setAdapter(new TaskAdapter(this, new OnTaskClickListener() {
-            @Override
-            public void onClick(Task task) {
-                Toast.makeText(MainActivity.this, task.getName(), Toast.LENGTH_LONG).show();
-            }
-        }, tasks));
-
-        DividerItemDecoration did = new DividerItemDecoration(rv.getContext(), linearLayoutManager.getOrientation());
-        rv.addItemDecoration(did);
-        rv.setHasFixedSize(true);
+    private void initToolbar() {
+        Toolbar myToolbar = findViewById(R.id.my_toolbar);
+        setSupportActionBar(myToolbar);
     }
 
-    private void createMockData() {
-        Random random = new Random();
-        for (int i = 0; i < 50; i++) {
-            tasks.add(new Task("Выполнить задание номер " + (i+1), random.nextInt(5)));
-        }
+    private void initViews() {
+        vpTabs = findViewById(R.id.vpTabs);
+        tlTabs = findViewById(R.id.tlTabs);
     }
 
-    private interface OnTaskClickListener {
-        void onClick(Task task);
+    @SuppressLint("UseSparseArrays")
+    private void initTabs() {
+        tabNames = new HashMap<>();
+        tabNames.put(0, "Задачи");
+        tabNames.put(1, "Продуктивность");
+
+        FragmentManager supportFragmentManager = getSupportFragmentManager();
+        TabsFragmentAdapter adapter = new TabsFragmentAdapter(supportFragmentManager);
+        vpTabs.setAdapter(adapter);
+        tlTabs.setupWithViewPager(vpTabs);
     }
 
-    private static class TaskAdapter extends RecyclerView.Adapter<TaskViewHolder>{
-        private final Context context;
-        private final OnTaskClickListener onTaskClickListener;
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.toolbar_menu, menu);
+        return true;
+    }
 
-        private final List<Task> tasks;
-
-        private TaskAdapter(Context context, OnTaskClickListener onTaskClickListener, List<Task> tasks) {
-            this.context = context;
-            this.onTaskClickListener = onTaskClickListener;
-            this.tasks = tasks;
-        }
-
-        @NonNull
-        @Override
-        public TaskViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            LayoutInflater inflater = LayoutInflater.from(context);
-            View view = inflater.inflate(R.layout.task_item, parent, false);
-            final TaskViewHolder taskViewHolder = new TaskViewHolder(view);
-            taskViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    onTaskClickListener.onClick(tasks.get(taskViewHolder.getAdapterPosition()));
-                }
-            });
-            return taskViewHolder;
-        }
-
-        @Override
-        public void onBindViewHolder(@NonNull TaskViewHolder taskViewHolder, int position) {
-            if (position != RecyclerView.NO_POSITION) {
-                taskViewHolder.setData(tasks.get(position));
-            }
-        }
-
-        @Override
-        public int getItemCount() {
-            return tasks.size();
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()) {
+            case R.id.action_writeMail:
+                Toast.makeText(this, "Write Mail clicked", Toast.LENGTH_SHORT).show();
+                sendMail();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 
-    private static class TaskViewHolder extends RecyclerView.ViewHolder {
-        private TextView tvTask;
-        private TextView tvMarker;
-
-
-        public TaskViewHolder(@NonNull View itemView) {
-            super(itemView);
-            tvTask = itemView.findViewById(R.id.tvTask);
-            tvMarker = itemView.findViewById(R.id.tvMarker);
-        }
-
-        public void setData(Task task) {
-            tvTask.setText(task.getName());
-            tvMarker.setTextColor(task.getColor());
-        }
+    private void sendMail() {
+        String text = "Test message from toolbar";
+        Intent sendMail = new Intent(Intent.ACTION_SEND);
+        sendMail.putExtra(Intent.EXTRA_EMAIL, "developer@gmai.com");
+        sendMail.putExtra(Intent.EXTRA_SUBJECT, "Message from toolbar");
+        sendMail.putExtra(Intent.EXTRA_TEXT, text);
+        sendMail.setType("message/rfc822");
+        startActivity(Intent.createChooser(sendMail, "Send mail with:"));
     }
 }

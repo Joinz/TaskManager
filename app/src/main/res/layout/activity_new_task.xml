@@ -17,8 +17,8 @@
 
         <EditText
             android:id="@+id/etTaskName"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:hint="@string/et_task_name"
             android:textColorHint="@color/black_new_item_hint"
             android:textSize="16sp"

@@ -1,8 +1,10 @@
 package com.joinz.taskmanager;
 
 import android.graphics.Color;
+import android.os.Parcel;
+import android.os.Parcelable;
 
-public class Task {
+public class Task implements Parcelable {
     private final String name;
     private final int priority;
 
@@ -30,4 +32,32 @@ public class Task {
             default: return Color.GREEN;
         }
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.name);
+        dest.writeInt(this.priority);
+    }
+
+    protected Task(Parcel in) {
+        this.name = in.readString();
+        this.priority = in.readInt();
+    }
+
+    public static final Parcelable.Creator<Task> CREATOR = new Parcelable.Creator<Task>() {
+        @Override
+        public Task createFromParcel(Parcel source) {
+            return new Task(source);
+        }
+
+        @Override
+        public Task[] newArray(int size) {
+            return new Task[size];
+        }
+    };
 }
