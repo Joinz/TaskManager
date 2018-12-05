@@ -15,9 +15,9 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="72dp"
-            android:background="@color/white"
             android:orientation="horizontal"
-            android:gravity="center">
+            android:gravity="center"
+            android:background="@color/white">
 
             <EditText
                 android:id="@+id/etTaskName"
@@ -46,7 +46,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:gravity="center_vertical">
+        android:gravity="center_vertical"
+        android:background="@color/white">
 
         <TextView
             android:id="@+id/tvDot"

@@ -43,14 +43,22 @@ public class PriorityDialogFragment extends DialogFragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        Button btn4 = ((Button) view.findViewById(R.id.btnPriority4));
-        Button btn3 = ((Button) view.findViewById(R.id.btnPriority3));
-        Button btn2 = ((Button) view.findViewById(R.id.btnPriority2));
-        Button btn1 = ((Button) view.findViewById(R.id.btnPriority1));
+        Button btn1 = view.findViewById(R.id.btnPriority1);
+        Button btn2 = view.findViewById(R.id.btnPriority2);
+        Button btn3 = view.findViewById(R.id.btnPriority3);
+        Button btn4 = view.findViewById(R.id.btnPriority4);
+        Button btnClose = view.findViewById(R.id.btnClose);
+
         btnListener(btn1, 1);
         btnListener(btn2, 2);
         btnListener(btn3, 3);
         btnListener(btn4, 4);
+        btnClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getDialog().cancel();
+            }
+        });
     }
 
     @Override

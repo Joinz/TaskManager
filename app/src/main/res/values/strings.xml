@@ -20,5 +20,6 @@
     <string name="btn_priority1">Приоритет 1</string>
     <string name="tv_priority_text">Приоритет</string>
     <string name="tv_tasks_done">задач выполнено</string>
+    <string name="btn_cancel">Отмена</string>
 
 </resources>
