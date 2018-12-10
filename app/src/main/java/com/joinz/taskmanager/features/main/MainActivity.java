@@ -64,15 +64,6 @@ public class MainActivity extends AppCompatActivity implements ProductivityChang
         }
     }
 
-    public int getTaskColor(int priority) {
-        switch (priority) {
-            case 4: return this.getResources().getColor(R.color.orangey_red);
-            case 3: return this.getResources().getColor(R.color.sun_yellow);
-            case 2: return this.getResources().getColor(R.color.viridian);
-            case 1: return this.getResources().getColor(R.color.clear_blue);
-            default: return this.getResources().getColor(R.color.clear_blue);
-        }
-    }
     private void sendMail() {
         String text = "Test message from toolbar";
         Intent sendMail = new Intent(Intent.ACTION_SEND);

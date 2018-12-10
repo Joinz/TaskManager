@@ -21,6 +21,6 @@ public class TaskViewHolder extends RecyclerView.ViewHolder {
 
     public void setData(Task task) {
         tvTask.setText(task.getName());
-        tvMarker.setTextColor(task.getColor(task.priority));
+        tvMarker.setTextColor(Task.getColor(task.priority));
     }
 }

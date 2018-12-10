@@ -1,64 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="280dp"
-    android:layout_height="wrap_content"
+    android:layout_height="320dp"
     android:orientation="vertical"
-    android:gravity="center"
-    android:layout_margin="40dp"
-    app:layout_constraintCircleRadius="2dp">
+    android:gravity="center">
 
     <TextView
-        android:layout_width="280dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/tv_priority_text"
-        android:textColor="@color/black"
-        android:textSize="16sp"
-        android:padding="16dp"/>
+        android:gravity="center"/>
 
     <Button
         android:id="@+id/btnPriority4"
-        android:layout_width="280dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/btn_priority4"
-        android:gravity="start"
-        android:textColor="@color/grey"
-        android:textSize="14sp"
-        android:padding="16dp"
+        android:layout_gravity="start"
+        android:textSize="16sp"
+        android:layout_margin="16dp"
         android:background="?android:attr/selectableItemBackground"/>
 
     <Button
         android:id="@+id/btnPriority3"
-        android:layout_width="280dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/btn_priority3"
-        android:gravity="start"
-        android:textColor="@color/grey"
-        android:textSize="14sp"
-        android:padding="16dp"
+        android:layout_gravity="start"
+        android:textSize="16sp"
+        android:layout_margin="16dp"
         android:background="?android:attr/selectableItemBackground"/>
 
     <Button
         android:id="@+id/btnPriority2"
-        android:layout_width="280dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/btn_priority2"
-        android:gravity="start"
-        android:textColor="@color/grey"
-        android:textSize="14sp"
-        android:padding="16dp"
+        android:layout_gravity="start"
+        android:textSize="16sp"
+        android:layout_margin="16dp"
         android:background="?android:attr/selectableItemBackground"/>
 
     <Button
         android:id="@+id/btnPriority1"
-        android:layout_width="280dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/btn_priority1"
-        android:gravity="start"
-        android:textColor="@color/grey"
-        android:textSize="14sp"
-        android:padding="16dp"
+        android:layout_gravity="start"
+        android:textSize="16sp"
+        android:layout_margin="16dp"
         android:background="?android:attr/selectableItemBackground"/>
 
     <Button
