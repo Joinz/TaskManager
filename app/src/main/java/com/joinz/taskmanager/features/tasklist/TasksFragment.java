@@ -2,7 +2,6 @@ package com.joinz.taskmanager.features.tasklist;
 
 
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -47,6 +46,7 @@ public class TasksFragment extends Fragment implements RecyclerItemTouchHelperLi
     private TaskAdapter taskAdapter;
 
     private ThreadPoolExecutor executor;
+    private Runnable runnableLoadFromDb;
     private Runnable runnableSetTasks;
     private Handler handler;
 
@@ -66,7 +66,7 @@ public class TasksFragment extends Fragment implements RecyclerItemTouchHelperLi
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        initRecyclerView(view);
+        initViews(view);
         initSwipeRefresh(view);
         initFab(view);
     }
@@ -78,7 +78,7 @@ public class TasksFragment extends Fragment implements RecyclerItemTouchHelperLi
         loadTasksFromDbWithAsyncTask();
     }
 
-    private void initRecyclerView(View view) {
+    private void initViews(View view) {
         rlEmptyPage = view.findViewById(R.id.rl_empty_page);
         rv = view.findViewById(R.id.recycler_view);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
@@ -152,7 +152,7 @@ public class TasksFragment extends Fragment implements RecyclerItemTouchHelperLi
 
     private void loadTasksFromDbWithHandler() {
         handler = new Handler(Looper.getMainLooper());
-        executor.submit(new Runnable() {
+        runnableLoadFromDb = new Runnable() {
             @Override
             public void run() {
                 tasks = loadTasksFromDb();
@@ -167,11 +167,12 @@ public class TasksFragment extends Fragment implements RecyclerItemTouchHelperLi
                 };
                 handler.post(runnableSetTasks);
             }
-        });
+        };
+        executor.submit(runnableLoadFromDb);
     }
 
     private void loadTasksFromDbWithAsyncTask() {
-        new LoadTasksWithAsyncTask(this).execute();
+        new LoadFromDbWithAsyncTask(this).execute();
     }
 
     public void isEmptyPage() {
@@ -206,8 +207,13 @@ public class TasksFragment extends Fragment implements RecyclerItemTouchHelperLi
 
     @Override
     public void onDestroyView() {
-        if (handler != null && runnableSetTasks != null) {
-            handler.removeCallbacks(runnableSetTasks);
+        if (handler != null) {
+            if (runnableSetTasks != null) {
+                handler.removeCallbacks(runnableSetTasks);
+            }
+            if (runnableLoadFromDb != null) {
+                handler.removeCallbacks(runnableLoadFromDb);
+            }
         }
         super.onDestroyView();
     }

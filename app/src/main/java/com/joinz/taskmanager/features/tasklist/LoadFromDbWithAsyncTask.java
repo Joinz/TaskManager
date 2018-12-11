@@ -7,10 +7,10 @@ import com.joinz.taskmanager.db.Task;
 
 import java.util.List;
 
-public class LoadTasksWithAsyncTask extends AsyncTask<Void, Void, List<Task>> {
+public class LoadFromDbWithAsyncTask extends AsyncTask<Void, Void, List<Task>> {
     private final TasksFragment tasksFragment;
 
-    public LoadTasksWithAsyncTask(TasksFragment tasksFragment) {
+    public LoadFromDbWithAsyncTask(TasksFragment tasksFragment) {
         this.tasksFragment = tasksFragment;
     }
 
