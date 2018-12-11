@@ -24,7 +24,7 @@
         android:textColor="@color/grey"
         android:textSize="14sp"
         android:padding="16dp"
-        android:background="@drawable/button_border"/>
+        android:background="@drawable/button_border_4"/>
 
     <Button
         android:id="@+id/btnPriority3"
@@ -35,7 +35,7 @@
         android:textColor="@color/grey"
         android:textSize="14sp"
         android:padding="16dp"
-        android:background="@drawable/button_border"/>
+        android:background="@drawable/button_border_3"/>
 
     <Button
         android:id="@+id/btnPriority2"
@@ -46,7 +46,7 @@
         android:textColor="@color/grey"
         android:textSize="14sp"
         android:padding="16dp"
-        android:background="@drawable/button_border"/>
+        android:background="@drawable/button_border_2"/>
 
     <Button
         android:id="@+id/btnPriority1"
@@ -57,7 +57,7 @@
         android:textColor="@color/grey"
         android:textSize="14sp"
         android:padding="16dp"
-        android:background="@drawable/button_border"/>
+        android:background="@drawable/button_border_1"/>
 
     <Button
         android:id="@+id/btnClose"
