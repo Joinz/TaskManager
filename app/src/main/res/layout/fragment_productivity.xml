@@ -1,17 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     tools:context=".features.productivity.ProductivityFragment"
     tools:ignore="UseCompoundDrawables">
 
-    <ImageView
+    <view class="com.joinz.taskmanager.features.productivity.ProductivityFragment$GraphView"
         android:layout_width="match_parent"
+        android:layout_height="300dp"
+        app:graphColor="@color/french_blue_02"
+        app:pointBorderColor="@color/french_blue_06"
+        app:pointBackgroundColor="@color/french_blue_04"/>
+
+    <com.joinz.taskmanager.features.productivity.DaysOfWeekView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/graph"/>
+        android:background="@color/sun_yellow"/>
 
     <TextView
         android:id="@+id/tvTasksDone"

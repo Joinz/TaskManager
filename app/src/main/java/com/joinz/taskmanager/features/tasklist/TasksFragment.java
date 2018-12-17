@@ -2,6 +2,7 @@ package com.joinz.taskmanager.features.tasklist;
 
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -45,10 +46,7 @@ public class TasksFragment extends Fragment implements RecyclerItemTouchHelperLi
     private List<Task> tasks = new ArrayList<>();
     private TaskAdapter taskAdapter;
 
-    private ThreadPoolExecutor executor;
-    private Runnable runnableLoadFromDb;
-    private Runnable runnableSetTasks;
-    private Handler handler;
+    private AsyncTask<Void, Void, List<Task>> asyncTask;
 
     public TasksFragment() {
         // Required empty public constructor
@@ -74,7 +72,6 @@ public class TasksFragment extends Fragment implements RecyclerItemTouchHelperLi
     @Override
     public void onResume() {
         super.onResume();
-//        loadTasksFromDbWithHandler();
         loadTasksFromDbWithAsyncTask();
     }
 
@@ -95,9 +92,6 @@ public class TasksFragment extends Fragment implements RecyclerItemTouchHelperLi
         rv.addItemDecoration(did);
         rv.setHasFixedSize(true);
 
-        int availableProcessors = Runtime.getRuntime().availableProcessors();
-        executor = new ThreadPoolExecutor(1, availableProcessors, 0, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(availableProcessors));
-
         ItemTouchHelper.SimpleCallback itemTouchHelperCallback = new RecyclerItemTouchHelper(0, ItemTouchHelper.RIGHT, this);
         new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(rv);
     }
@@ -107,9 +101,6 @@ public class TasksFragment extends Fragment implements RecyclerItemTouchHelperLi
         srTasks.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-//                loadTasksFromDb();
-//                setTasks(tasks);
-//                loadTasksFromDbWithHandler();
                 loadTasksFromDbWithAsyncTask();
             }
         });
@@ -140,39 +131,17 @@ public class TasksFragment extends Fragment implements RecyclerItemTouchHelperLi
         taskAdapter.setTasks(tasks);
         isEmptyPage();
 
-        if (srTasks.isRefreshing()) {
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    srTasks.setRefreshing(false);
-                }
-            }, 2000);
-        }
-    }
-
-    private void loadTasksFromDbWithHandler() {
-        handler = new Handler(Looper.getMainLooper());
-        runnableLoadFromDb = new Runnable() {
+        new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                tasks = loadTasksFromDb();
-                Log.d("Threads", Thread.currentThread().getName());
-
-                runnableSetTasks = new Runnable() {
-                    @Override
-                    public void run() {
-                        setTasks(tasks);
-                        Log.d("Threads", Thread.currentThread().getName());
-                    }
-                };
-                handler.post(runnableSetTasks);
+                srTasks.setRefreshing(false);
             }
-        };
-        executor.submit(runnableLoadFromDb);
+        }, 2000);
     }
 
     private void loadTasksFromDbWithAsyncTask() {
-        new LoadFromDbWithAsyncTask(this).execute();
+        asyncTask = new LoadFromDbWithAsyncTask(this);
+        asyncTask.execute();
     }
 
     public void isEmptyPage() {
@@ -206,16 +175,9 @@ public class TasksFragment extends Fragment implements RecyclerItemTouchHelperLi
     }
 
     @Override
-    public void onDestroyView() {
-        if (handler != null) {
-            if (runnableSetTasks != null) {
-                handler.removeCallbacks(runnableSetTasks);
-            }
-            if (runnableLoadFromDb != null) {
-                handler.removeCallbacks(runnableLoadFromDb);
-            }
-        }
-        super.onDestroyView();
+    public void onStop() {
+        asyncTask.cancel(true);
+        super.onStop();
     }
 }
 

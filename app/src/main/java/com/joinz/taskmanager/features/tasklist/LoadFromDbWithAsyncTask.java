@@ -8,7 +8,7 @@ import com.joinz.taskmanager.db.Task;
 import java.util.List;
 
 public class LoadFromDbWithAsyncTask extends AsyncTask<Void, Void, List<Task>> {
-    private final TasksFragment tasksFragment;
+    private TasksFragment tasksFragment;
 
     public LoadFromDbWithAsyncTask(TasksFragment tasksFragment) {
         this.tasksFragment = tasksFragment;
@@ -26,5 +26,11 @@ public class LoadFromDbWithAsyncTask extends AsyncTask<Void, Void, List<Task>> {
         super.onPostExecute(tasks);
         tasksFragment.setTasks(tasks);
         Log.d("Threads", Thread.currentThread().getName());
+    }
+
+    @Override
+    protected void onCancelled() {
+        tasksFragment = null;
+        super.onCancelled();
     }
 }

@@ -31,6 +31,7 @@ public class NewTaskFragment extends Fragment {
     private TextView tvDot;
     private int priority = 0;
     private PriorityDialogFragment priorityDialogFragment;
+    private LoadTaskToDbWithAsyncTask asyncTask;
 
     public static NewTaskFragment newInstance() {
         return new NewTaskFragment();
@@ -106,7 +107,14 @@ public class NewTaskFragment extends Fragment {
     }
 
     public void loadTaskToDbWithAsyncTask(final Task task) {
-        new LoadTaskToDbWithAsyncTask(this, task).execute();
+        asyncTask = new LoadTaskToDbWithAsyncTask(this, task);
+        asyncTask.execute();
+    }
+
+    @Override
+    public void onStop() {
+        asyncTask.cancel(true);
+        super.onStop();
     }
 }
 
