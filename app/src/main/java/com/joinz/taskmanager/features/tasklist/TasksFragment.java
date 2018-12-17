@@ -4,6 +4,7 @@ package com.joinz.taskmanager.features.tasklist;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -14,6 +15,7 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,6 +32,9 @@ import com.joinz.taskmanager.features.newtask.NewTaskActivity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 public class TasksFragment extends Fragment implements RecyclerItemTouchHelperListener {
 
@@ -39,6 +44,11 @@ public class TasksFragment extends Fragment implements RecyclerItemTouchHelperLi
     private FloatingActionButton fabAddTask;
     private List<Task> tasks = new ArrayList<>();
     private TaskAdapter taskAdapter;
+
+    private ThreadPoolExecutor executor;
+    private Runnable runnableLoadFromDb;
+    private Runnable runnableSetTasks;
+    private Handler handler;
 
     public TasksFragment() {
         // Required empty public constructor
@@ -56,7 +66,7 @@ public class TasksFragment extends Fragment implements RecyclerItemTouchHelperLi
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        initRecyclerView(view);
+        initViews(view);
         initSwipeRefresh(view);
         initFab(view);
     }
@@ -64,10 +74,11 @@ public class TasksFragment extends Fragment implements RecyclerItemTouchHelperLi
     @Override
     public void onResume() {
         super.onResume();
-        loadTasksFromDb();
+//        loadTasksFromDbWithHandler();
+        loadTasksFromDbWithAsyncTask();
     }
 
-    private void initRecyclerView(View view) {
+    private void initViews(View view) {
         rlEmptyPage = view.findViewById(R.id.rl_empty_page);
         rv = view.findViewById(R.id.recycler_view);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
@@ -84,6 +95,9 @@ public class TasksFragment extends Fragment implements RecyclerItemTouchHelperLi
         rv.addItemDecoration(did);
         rv.setHasFixedSize(true);
 
+        int availableProcessors = Runtime.getRuntime().availableProcessors();
+        executor = new ThreadPoolExecutor(1, availableProcessors, 0, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(availableProcessors));
+
         ItemTouchHelper.SimpleCallback itemTouchHelperCallback = new RecyclerItemTouchHelper(0, ItemTouchHelper.RIGHT, this);
         new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(rv);
     }
@@ -93,7 +107,10 @@ public class TasksFragment extends Fragment implements RecyclerItemTouchHelperLi
         srTasks.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                loadTasksFromDb();
+//                loadTasksFromDb();
+//                setTasks(tasks);
+//                loadTasksFromDbWithHandler();
+                loadTasksFromDbWithAsyncTask();
             }
         });
     }
@@ -110,13 +127,20 @@ public class TasksFragment extends Fragment implements RecyclerItemTouchHelperLi
         });
     }
 
-    private void loadTasksFromDb() {
+    public List<Task> loadTasksFromDb() {
         FragmentActivity activity = getActivity();
         if (activity != null) {
             AppDatabase db = App.getInstance().getDatabase();
-            taskAdapter.setTasks(db.taskDao().getAll());
-            isEmptyPage();
+            tasks = db.taskDao().getAll();
+        }
+        return tasks;
+    }
 
+    public void setTasks (List<Task> tasks) {
+        taskAdapter.setTasks(tasks);
+        isEmptyPage();
+
+        if (srTasks.isRefreshing()) {
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -124,6 +148,31 @@ public class TasksFragment extends Fragment implements RecyclerItemTouchHelperLi
                 }
             }, 2000);
         }
+    }
+
+    private void loadTasksFromDbWithHandler() {
+        handler = new Handler(Looper.getMainLooper());
+        runnableLoadFromDb = new Runnable() {
+            @Override
+            public void run() {
+                tasks = loadTasksFromDb();
+                Log.d("Threads", Thread.currentThread().getName());
+
+                runnableSetTasks = new Runnable() {
+                    @Override
+                    public void run() {
+                        setTasks(tasks);
+                        Log.d("Threads", Thread.currentThread().getName());
+                    }
+                };
+                handler.post(runnableSetTasks);
+            }
+        };
+        executor.submit(runnableLoadFromDb);
+    }
+
+    private void loadTasksFromDbWithAsyncTask() {
+        new LoadFromDbWithAsyncTask(this).execute();
     }
 
     public void isEmptyPage() {
@@ -155,4 +204,18 @@ public class TasksFragment extends Fragment implements RecyclerItemTouchHelperLi
             Toast.makeText(getContext(), "addDoneTaskPref() from TasksFragment", Toast.LENGTH_SHORT).show();
         }
     }
+
+    @Override
+    public void onDestroyView() {
+        if (handler != null) {
+            if (runnableSetTasks != null) {
+                handler.removeCallbacks(runnableSetTasks);
+            }
+            if (runnableLoadFromDb != null) {
+                handler.removeCallbacks(runnableLoadFromDb);
+            }
+        }
+        super.onDestroyView();
+    }
 }
+

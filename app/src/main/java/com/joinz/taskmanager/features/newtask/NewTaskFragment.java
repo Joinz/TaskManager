@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.Editable;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -21,8 +20,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.joinz.taskmanager.R;
-import com.joinz.taskmanager.db.App;
-import com.joinz.taskmanager.db.AppDatabase;
 import com.joinz.taskmanager.db.Task;
 
 public class NewTaskFragment extends Fragment {
@@ -47,7 +44,7 @@ public class NewTaskFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         initViews(view);
-        addSpannable();
+        addSpannableDot();
         setListeners();
     }
 
@@ -59,7 +56,7 @@ public class NewTaskFragment extends Fragment {
         ibNewItem.setEnabled(false);
     }
 
-    private void addSpannable() {
+    private void addSpannableDot() {
         Spannable spannableText = new SpannableString(tvDot.getText().toString());
         spannableText.setSpan(new ForegroundColorSpan(Task.getColor(priority)), 0, 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         tvDot.setText(spannableText);
@@ -72,10 +69,7 @@ public class NewTaskFragment extends Fragment {
                 String taskName = etTaskName.getText().toString();
                 Task task = new Task(taskName, priority);
 
-                AppDatabase db = App.getInstance().getDatabase();
-                db.taskDao().insert(task);
-                getActivity().finish();
-                Toast.makeText(getContext(), "Задача " + task.name + " добавлена", Toast.LENGTH_SHORT).show();
+                loadTaskToDbWithAsyncTask(task);
             }
         });
 
@@ -107,7 +101,12 @@ public class NewTaskFragment extends Fragment {
 
     public void onPriorityChosen(int priority) {
         this.priority = priority;
-        addSpannable();
+        addSpannableDot();
         Toast.makeText(getContext(), "Выбран приоритет: " + priority, Toast.LENGTH_SHORT).show();
     }
+
+    public void loadTaskToDbWithAsyncTask(final Task task) {
+        new LoadTaskToDbWithAsyncTask(this, task).execute();
+    }
 }
+
