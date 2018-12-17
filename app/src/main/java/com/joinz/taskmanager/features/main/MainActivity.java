@@ -1,8 +1,6 @@
-package com.joinz.taskmanager;
+package com.joinz.taskmanager.features.main;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentManager;
@@ -14,42 +12,35 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import java.util.HashMap;
+import com.joinz.taskmanager.features.productivity.ProductivityChangedListener;
+import com.joinz.taskmanager.features.productivity.ProductivityFragment;
+import com.joinz.taskmanager.R;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ProductivityChangedListener {
 
+    Toolbar myToolbar;
     private ViewPager vpTabs;
     private TabLayout tlTabs;
-    public static HashMap<Integer, String> tabNames;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        initToolbar();
         initViews();
+        setSupportActionBar(myToolbar);
         initTabs();
     }
 
-    private void initToolbar() {
-        Toolbar myToolbar = findViewById(R.id.my_toolbar);
-        setSupportActionBar(myToolbar);
-    }
-
     private void initViews() {
+        myToolbar = findViewById(R.id.my_toolbar);
         vpTabs = findViewById(R.id.vpTabs);
         tlTabs = findViewById(R.id.tlTabs);
     }
 
-    @SuppressLint("UseSparseArrays")
     private void initTabs() {
-        tabNames = new HashMap<>();
-        tabNames.put(0, "Задачи");
-        tabNames.put(1, "Продуктивность");
-
         FragmentManager supportFragmentManager = getSupportFragmentManager();
-        TabsFragmentAdapter adapter = new TabsFragmentAdapter(supportFragmentManager);
+        TabsFragmentAdapter adapter = new TabsFragmentAdapter(supportFragmentManager, this);
         vpTabs.setAdapter(adapter);
         tlTabs.setupWithViewPager(vpTabs);
     }
@@ -73,6 +64,15 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public int getTaskColor(int priority) {
+        switch (priority) {
+            case 4: return this.getResources().getColor(R.color.orangey_red);
+            case 3: return this.getResources().getColor(R.color.sun_yellow);
+            case 2: return this.getResources().getColor(R.color.viridian);
+            case 1: return this.getResources().getColor(R.color.clear_blue);
+            default: return this.getResources().getColor(R.color.clear_blue);
+        }
+    }
     private void sendMail() {
         String text = "Test message from toolbar";
         Intent sendMail = new Intent(Intent.ACTION_SEND);
@@ -82,4 +82,12 @@ public class MainActivity extends AppCompatActivity {
         sendMail.setType("message/rfc822");
         startActivity(Intent.createChooser(sendMail, "Send mail with:"));
     }
+
+    @Override
+    public void onProductivityChanged() {
+        TabsFragmentAdapter adapter = (TabsFragmentAdapter) vpTabs.getAdapter();
+        ProductivityFragment fragment = (((ProductivityFragment) adapter.getItem(1)));
+        fragment.setTasksDone();
+    }
+
 }

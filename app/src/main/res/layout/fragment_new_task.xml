@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".features.newtask.NewTaskActivity"
+    android:background="@drawable/bg">
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="72dp"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:background="@color/white">
+
+            <EditText
+                android:id="@+id/etTaskName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:hint="@string/et_task_name"
+                android:textColorHint="@color/black_new_item_hint"
+                android:textSize="16sp"
+                android:lineSpacingExtra="8sp"
+                android:layout_margin="16dp"
+                android:background="@null"
+                android:layout_weight="1"/>
+
+            <ImageButton
+                android:id="@+id/ibNewItem"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@mipmap/ic_add_new_item"
+                android:layout_margin="16dp"
+                android:background="@drawable/new_task_bg"/>
+
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:gravity="center_vertical"
+        android:background="@color/white">
+
+        <TextView
+            android:id="@+id/tvDot"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/tvDot"
+            android:textSize="30sp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginStart="16dp"
+            />
+
+        <TextView
+            android:id="@+id/tvPriority"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/tv_priority"
+            android:textSize="14sp"
+            android:lineSpacingExtra="10sp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            android:background="@color/white"/>
+
+    </LinearLayout>
+
+</LinearLayout>

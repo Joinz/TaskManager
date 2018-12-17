@@ -13,19 +13,18 @@
         android:layout_weight="1"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Выполнить домашнее задание"
+        tools:text="Выполнить домашнее задание"
         android:textSize="16sp"
         android:lineSpacingExtra="8sp"
         android:layout_margin="16dp"
-        />
+        android:textColor="@color/black"/>
 
     <TextView
         android:id="@+id/tvMarker"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="•"
+        tools:text="•"
         android:textSize="32sp"
-        android:layout_margin="16dp"
-        />
+        android:layout_margin="16dp"/>
 
 </LinearLayout>
