@@ -32,6 +32,11 @@ public class LoadTaskToDbWithAsyncTask extends AsyncTask<Void, Void, Void> {
             activity.finish();
             Toast.makeText(newTaskFragment.getContext(), "Задача " + task.name + " добавлена ", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    @Override
+    protected void onCancelled() {
         newTaskFragment = null;
+        super.onCancelled();
     }
 }
