@@ -1,17 +1,22 @@
 package com.joinz.taskmanager.features.productivity;
 
 import android.content.Context;
-import android.graphics.Color;
+import android.content.res.TypedArray;
+import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.joinz.taskmanager.R;
 
 import java.util.Arrays;
 import java.util.List;
 
 public class DaysOfWeekView extends ViewGroup {
-    private final List<String> days = Arrays.asList("mo", "tu", "we", "th", "fr", "tu", "su");
+    private int daysTextSize;
+    private List<String> days = Arrays.asList("su", "mo", "tu", "we", "th", "fr", "tu");
     private int width = 0;
 
     public DaysOfWeekView(Context context) {
@@ -19,17 +24,29 @@ public class DaysOfWeekView extends ViewGroup {
         init(context);
     }
 
-    public DaysOfWeekView(Context context, AttributeSet attrs) {
+    public DaysOfWeekView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+        TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.DaysOfWeekView, 0, 0);
+        try {
+            int resourceId = a.getResourceId(R.styleable.DaysOfWeekView_days, 0);
+            if (resourceId != 0) {
+                this.days = Arrays.asList(a.getResources().getStringArray(resourceId));
+            }
+            this.daysTextSize = a.getDimensionPixelSize(R.styleable.DaysOfWeekView_daysTextSize, 12);
+        } finally {
+            a.recycle();
+        }
         init(context);
+
     }
 
     private void init(Context context) {
         for (String day : days) {
             TextView tv = new TextView(context);
+            tv.setLayoutParams(new ViewGroup.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
             tv.setText(day);
-            tv.setTextColor(Color.BLACK);
-            tv.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+            tv.setTextSize(TypedValue.COMPLEX_UNIT_PX, daysTextSize);
+            tv.setGravity(TEXT_ALIGNMENT_VIEW_END);
             addView(tv);
         }
     }
@@ -52,7 +69,7 @@ public class DaysOfWeekView extends ViewGroup {
         }
         width = measuredWidth;
 
-        setMeasuredDimension(measuredWidth, height);
+        setMeasuredDimension(width, height);
     }
 
     @Override
@@ -61,7 +78,7 @@ public class DaysOfWeekView extends ViewGroup {
 
         for (int i = 0; i < getChildCount(); i++) {
             View childView = getChildAt(i);
-            childView.layout(i * space, t, i * space + space, b);
+            childView.layout(i * space + getPaddingLeft(), getPaddingTop(), i * space + space - getPaddingRight(), b - getPaddingBottom());
         }
     }
 }

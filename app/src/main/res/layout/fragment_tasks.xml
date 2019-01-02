@@ -55,7 +55,6 @@
             android:lineSpacingExtra="8sp"
             android:text="@string/tv_empty_page2"/>
 
-
     </RelativeLayout>
 
     <android.support.design.widget.FloatingActionButton
@@ -64,7 +63,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"
         android:layout_margin="16dp"
-        android:src="@drawable/ic_add_white_24dp"
-        app:layout_scrollFlags="scroll|enterAlways"/>
+        android:src="@drawable/ic_add_white_24dp"/>
 
 </FrameLayout>

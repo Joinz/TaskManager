@@ -7,15 +7,28 @@ import java.util.Date;
 
 @Entity
 public class TasksDone {
-    @PrimaryKey(autoGenerate = true)
-    public int id;
-    public Date date;
-    public int count;
+    @PrimaryKey
+    int date;
+    int count;
 
-    public TasksDone(Date date, int count) {
+    public TasksDone(int date, int count) {
         this.date = date;
         this.count = count;
     }
 
-    
+    public int getDate() {
+        return date;
+    }
+
+    public void setDate(int date) {
+        this.date = date;
+    }
+
+    public int getCount() {
+        return count;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
+    }
 }

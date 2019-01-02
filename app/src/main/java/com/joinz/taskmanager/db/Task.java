@@ -21,10 +21,6 @@ public class Task  {
         return name;
     }
 
-    public int getPriority() {
-        return priority;
-    }
-
     public static int getColor(int priority) {
         switch (priority) {
             case 4: return Color.parseColor("#f44336");

@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="GraphView">
-        <!--<attr name="none" format="integer"></attr>-->
         <attr name="graphColor" format="color"/>
         <attr name="pointBorderColor" format="color"/>
         <attr name="pointBackgroundColor" format="color"/>
+    </declare-styleable>
+
+    <declare-styleable name="DaysOfWeekView">
+        <attr name="days" format="reference"/>
+        <attr name="daysTextSize" format="dimension"/>
     </declare-styleable>
 </resources>

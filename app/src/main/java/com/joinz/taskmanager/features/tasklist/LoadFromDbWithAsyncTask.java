@@ -16,16 +16,13 @@ public class LoadFromDbWithAsyncTask extends AsyncTask<Void, Void, List<Task>> {
 
     @Override
     protected List<Task> doInBackground(Void... voids) {
-        List<Task> tasks = tasksFragment.loadTasksFromDb();
-        Log.d("Threads", Thread.currentThread().getName());
-        return tasks;
+        return tasksFragment.loadTasksFromDb();
     }
 
     @Override
     protected void onPostExecute(List<Task> tasks) {
         super.onPostExecute(tasks);
         tasksFragment.setTasks(tasks);
-        Log.d("Threads", Thread.currentThread().getName());
     }
 
     @Override
