@@ -30,4 +30,10 @@ public class LoadFromDbWithAsyncTask extends AsyncTask<Void, Void, List<Task>> {
         tasksFragment = null;
         super.onCancelled();
     }
+
+    @Override
+    protected void onCancelled() {
+        super.onCancelled();
+        tasksFragment = null;
+    }
 }

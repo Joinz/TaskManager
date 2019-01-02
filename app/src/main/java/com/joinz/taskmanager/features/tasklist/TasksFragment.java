@@ -42,7 +42,7 @@ public class TasksFragment extends Fragment implements RecyclerItemTouchHelperLi
     private TaskAdapter taskAdapter;
 
     private AsyncTask<Void, Void, List<Task>> asyncTaskLoadTasks;
-    private MakeTasksDoneInDbWithAsyncTask asyncTaskDoneTasks;
+
 
     public TasksFragment() {
         // Required empty public constructor
