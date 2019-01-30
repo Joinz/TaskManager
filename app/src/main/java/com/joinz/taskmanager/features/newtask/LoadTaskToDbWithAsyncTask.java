@@ -28,7 +28,7 @@ public class LoadTaskToDbWithAsyncTask extends AsyncTask<Void, Void, Void> {
     protected void onPostExecute(Void aVoid) {
         super.onPostExecute(aVoid);
         FragmentActivity activity = newTaskFragment.getActivity();
-        if (activity != null && activity.getClass().getSimpleName().equals(NewTaskActivity.class.getSimpleName())) {
+        if (activity != null) {
             activity.finish();
             Toast.makeText(newTaskFragment.getContext(), "Задача " + task.name + " добавлена ", Toast.LENGTH_SHORT).show();
         }

@@ -1,5 +1,5 @@
 package com.joinz.taskmanager.features.productivity;
 
-public interface ProductivityChangedListener {
+public interface OnProductivityChangedListener {
     void onProductivityChanged();
 }
