@@ -2,9 +2,9 @@ package com.joinz.taskmanager.features.tasklist;
 
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -15,7 +15,6 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,14 +26,14 @@ import com.joinz.taskmanager.features.productivity.ProductivityFragment;
 import com.joinz.taskmanager.R;
 import com.joinz.taskmanager.db.App;
 import com.joinz.taskmanager.db.AppDatabase;
+import com.joinz.taskmanager.db.PersistantStorage;
 import com.joinz.taskmanager.db.Task;
 import com.joinz.taskmanager.features.newtask.NewTaskActivity;
+import com.joinz.taskmanager.features.productivity.OnProductivityChangedListener;
+import com.joinz.taskmanager.features.productivity.ProductivityFragment;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 public class TasksFragment extends Fragment implements RecyclerItemTouchHelperListener {
 
@@ -45,7 +44,8 @@ public class TasksFragment extends Fragment implements RecyclerItemTouchHelperLi
     private List<Task> tasks = new ArrayList<>();
     private TaskAdapter taskAdapter;
 
-    private LoadFromDbWithAsyncTask asyncTask;
+    private AsyncTask<Void, Void, List<Task>> asyncTaskLoadTasks;
+    private MakeTasksDoneInDbWithAsyncTask asyncTaskDoneTasks;
 
     public TasksFragment() {
         // Required empty public constructor
@@ -71,6 +71,7 @@ public class TasksFragment extends Fragment implements RecyclerItemTouchHelperLi
     @Override
     public void onResume() {
         super.onResume();
+//        loadTasksFromDbWithHandler();
         loadTasksFromDbWithAsyncTask();
     }
 
@@ -91,6 +92,9 @@ public class TasksFragment extends Fragment implements RecyclerItemTouchHelperLi
         rv.addItemDecoration(did);
         rv.setHasFixedSize(true);
 
+        int availableProcessors = Runtime.getRuntime().availableProcessors();
+        executor = new ThreadPoolExecutor(1, availableProcessors, 0, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(availableProcessors));
+
         ItemTouchHelper.SimpleCallback itemTouchHelperCallback = new RecyclerItemTouchHelper(0, ItemTouchHelper.RIGHT, this);
         new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(rv);
     }
@@ -100,6 +104,9 @@ public class TasksFragment extends Fragment implements RecyclerItemTouchHelperLi
         srTasks.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+//                loadTasksFromDb();
+//                setTasks(tasks);
+//                loadTasksFromDbWithHandler();
                 loadTasksFromDbWithAsyncTask();
             }
         });
@@ -112,6 +119,22 @@ public class TasksFragment extends Fragment implements RecyclerItemTouchHelperLi
             public void onClick(View view) {
                 if (getActivity() != null) {
                     startActivity(new Intent(getActivity(), NewTaskActivity.class));
+                }
+            }
+        });
+        rv.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    fabAddTask.show();
+                }
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                if (dy > 0 || dy < 0 && fabAddTask.isShown()) {
+                    fabAddTask.hide();
                 }
             }
         });
@@ -138,9 +161,30 @@ public class TasksFragment extends Fragment implements RecyclerItemTouchHelperLi
         }, 2000);
     }
 
+    private void loadTasksFromDbWithHandler() {
+        handler = new Handler(Looper.getMainLooper());
+        runnableLoadFromDb = new Runnable() {
+            @Override
+            public void run() {
+                tasks = loadTasksFromDb();
+                Log.d("Threads", Thread.currentThread().getName());
+
+                runnableSetTasks = new Runnable() {
+                    @Override
+                    public void run() {
+                        setTasks(tasks);
+                        Log.d("Threads", Thread.currentThread().getName());
+                    }
+                };
+                handler.post(runnableSetTasks);
+            }
+        };
+        executor.submit(runnableLoadFromDb);
+    }
+
     private void loadTasksFromDbWithAsyncTask() {
-        asyncTask = new LoadFromDbWithAsyncTask(this);
-        asyncTask.execute();
+        asyncTaskLoadTasks = new LoadFromDbWithAsyncTask(this);
+        asyncTaskLoadTasks.execute();
     }
 
     public void isEmptyPage() {
@@ -160,6 +204,7 @@ public class TasksFragment extends Fragment implements RecyclerItemTouchHelperLi
             taskAdapter.removeTask(viewHolder.getAdapterPosition());
 
             isEmptyPage();
+            addTasksDoneToDb();
             addDoneTaskPref();
         }
     }
@@ -167,15 +212,23 @@ public class TasksFragment extends Fragment implements RecyclerItemTouchHelperLi
     private void addDoneTaskPref() {
         int tasksDone = PersistantStorage.getProperty(ProductivityFragment.TASKS_DONE);
         PersistantStorage.addProperty(ProductivityFragment.TASKS_DONE, ++tasksDone);
-        if (getActivity() instanceof ProductivityChangedListener) {
-            ((ProductivityChangedListener) getActivity()).onProductivityChanged();
-            Toast.makeText(getContext(), "addDoneTaskPref() from TasksFragment", Toast.LENGTH_SHORT).show();
+        if (getActivity() instanceof OnProductivityChangedListener) {
+            ((OnProductivityChangedListener) getActivity()).onProductivityChanged();
+            Toast.makeText(getContext(), "Task deleted", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void addTasksDoneToDb () {
+        asyncTaskDoneTasks = new MakeTasksDoneInDbWithAsyncTask();
+        asyncTaskDoneTasks.execute();
     }
 
     @Override
     public void onStop() {
-        asyncTask.cancel(true);
+        asyncTaskLoadTasks.cancel(true);
+        if (asyncTaskDoneTasks != null) {
+            asyncTaskDoneTasks.cancel(true);
+        }
         super.onStop();
     }
 }

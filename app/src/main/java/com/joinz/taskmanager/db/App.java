@@ -3,6 +3,8 @@ package com.joinz.taskmanager.db;
 import android.app.Application;
 import android.arch.persistence.room.Room;
 
+import com.facebook.stetho.Stetho;
+
 public class App extends Application {
 
     public static App instance;
@@ -13,6 +15,7 @@ public class App extends Application {
         super.onCreate();
         instance = this;
         database = Room.databaseBuilder(this, AppDatabase.class, "database").allowMainThreadQueries().build();
+        Stetho.initializeWithDefaults(this);
     }
 
     public static App getInstance() {

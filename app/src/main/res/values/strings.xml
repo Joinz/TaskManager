@@ -22,4 +22,13 @@
     <string name="btn_cancel">Отмена</string>
     <string name="tv_tasks_done">задач выполнено</string>
 
+    <string-array name="days_array">
+        <item>su</item>
+        <item>mo</item>
+        <item>tu</item>
+        <item>we</item>
+        <item>th</item>
+        <item>fr</item>
+        <item>sa</item>
+    </string-array>
 </resources>

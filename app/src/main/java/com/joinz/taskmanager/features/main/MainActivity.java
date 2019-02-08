@@ -12,11 +12,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.joinz.taskmanager.features.productivity.ProductivityChangedListener;
+import com.joinz.taskmanager.features.productivity.OnProductivityChangedListener;
 import com.joinz.taskmanager.features.productivity.ProductivityFragment;
 import com.joinz.taskmanager.R;
 
-public class MainActivity extends AppCompatActivity implements ProductivityChangedListener {
+public class MainActivity extends AppCompatActivity implements OnProductivityChangedListener {
 
     Toolbar myToolbar;
     private ViewPager vpTabs;
@@ -77,8 +77,8 @@ public class MainActivity extends AppCompatActivity implements ProductivityChang
     @Override
     public void onProductivityChanged() {
         TabsFragmentAdapter adapter = (TabsFragmentAdapter) vpTabs.getAdapter();
-        ProductivityFragment fragment = (((ProductivityFragment) adapter.getItem(1)));
-        fragment.setTasksDone();
+        ProductivityFragment productivityFragment = (((ProductivityFragment) adapter.getItem(1)));
+        productivityFragment.setTasksDone();
     }
 
 }
