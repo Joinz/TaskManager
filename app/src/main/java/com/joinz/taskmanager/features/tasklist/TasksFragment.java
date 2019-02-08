@@ -20,9 +20,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.joinz.taskmanager.db.PersistantStorage;
-import com.joinz.taskmanager.features.productivity.ProductivityChangedListener;
-import com.joinz.taskmanager.features.productivity.ProductivityFragment;
 import com.joinz.taskmanager.R;
 import com.joinz.taskmanager.db.App;
 import com.joinz.taskmanager.db.AppDatabase;
@@ -92,9 +89,6 @@ public class TasksFragment extends Fragment implements RecyclerItemTouchHelperLi
         rv.addItemDecoration(did);
         rv.setHasFixedSize(true);
 
-        int availableProcessors = Runtime.getRuntime().availableProcessors();
-        executor = new ThreadPoolExecutor(1, availableProcessors, 0, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(availableProcessors));
-
         ItemTouchHelper.SimpleCallback itemTouchHelperCallback = new RecyclerItemTouchHelper(0, ItemTouchHelper.RIGHT, this);
         new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(rv);
     }
@@ -104,9 +98,6 @@ public class TasksFragment extends Fragment implements RecyclerItemTouchHelperLi
         srTasks.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-//                loadTasksFromDb();
-//                setTasks(tasks);
-//                loadTasksFromDbWithHandler();
                 loadTasksFromDbWithAsyncTask();
             }
         });
@@ -159,27 +150,6 @@ public class TasksFragment extends Fragment implements RecyclerItemTouchHelperLi
                 srTasks.setRefreshing(false);
             }
         }, 2000);
-    }
-
-    private void loadTasksFromDbWithHandler() {
-        handler = new Handler(Looper.getMainLooper());
-        runnableLoadFromDb = new Runnable() {
-            @Override
-            public void run() {
-                tasks = loadTasksFromDb();
-                Log.d("Threads", Thread.currentThread().getName());
-
-                runnableSetTasks = new Runnable() {
-                    @Override
-                    public void run() {
-                        setTasks(tasks);
-                        Log.d("Threads", Thread.currentThread().getName());
-                    }
-                };
-                handler.post(runnableSetTasks);
-            }
-        };
-        executor.submit(runnableLoadFromDb);
     }
 
     private void loadTasksFromDbWithAsyncTask() {
