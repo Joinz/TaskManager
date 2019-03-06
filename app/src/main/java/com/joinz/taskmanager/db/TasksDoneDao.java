@@ -1,26 +1,24 @@
 package com.joinz.taskmanager.db;
 
-import android.arch.persistence.room.Dao;
-import android.arch.persistence.room.Delete;
-import android.arch.persistence.room.Insert;
-import android.arch.persistence.room.OnConflictStrategy;
-import android.arch.persistence.room.Query;
-import android.arch.persistence.room.Update;
-
 import java.util.List;
+
+import androidx.room.Dao;
+import androidx.room.Insert;
+import androidx.room.OnConflictStrategy;
+import androidx.room.Query;
+import io.reactivex.Completable;
+import io.reactivex.Observable;
+import io.reactivex.Single;
 
 @Dao
 public interface TasksDoneDao {
 
     @Query("SELECT * FROM TasksDone")
-    List<TasksDone> getAll();
+    Observable<List<TasksDone>> getAllReactively();
 
     @Query("SELECT * FROM TasksDone WHERE date = :date")
-    TasksDone getByDate(int date);
+    Single<TasksDone> getByDateReactively(int date);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insert(TasksDone tasksDone);
-
-    @Delete
-    void delete(TasksDone tasksDone);
+    Completable insertReactively(TasksDone tasksDone);
 }

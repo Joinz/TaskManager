@@ -1,27 +1,39 @@
 package com.joinz.taskmanager.features.productivity;
 
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.joinz.taskmanager.R;
-import com.joinz.taskmanager.db.PersistantStorage;
+import com.joinz.taskmanager.db.App;
+import com.joinz.taskmanager.db.AppDatabase;
+import com.joinz.taskmanager.db.TasksDone;
+import com.joinz.taskmanager.db.TasksDoneDao;
 
+import java.util.Arrays;
 import java.util.List;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 
 public class ProductivityFragment extends Fragment {
 
+    public static final  String TAG = "DEBUG";
     public static final String TASKS_DONE = "tasksDone";
     private TextView tvTasksDone;
     private GraphView graphView;
-    private AsyncTask<Void, Void, List<Integer>> getTasksDoneAsyncTask;
+
+    private final AppDatabase database = App.getInstance().getDatabase();
+    private CompositeDisposable compositeDisposable;
 
     public GraphView getGraphView() {
         return graphView;
@@ -47,28 +59,62 @@ public class ProductivityFragment extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        Log.d(TAG, "ProductivityFragment.onResume");
+        compositeDisposable = new CompositeDisposable();
+        updateGraphReactively();
+    }
+
+    @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         tvTasksDone = view.findViewById(R.id.tvTasksDone);
         graphView = view.findViewById(R.id.gv);
-        setTasksDone();
     }
 
-    public void setTasksDone() {
-        if (getActivity() != null) {
-            PersistantStorage.init(getActivity());
-            int value = PersistantStorage.getProperty(TASKS_DONE);
-            String taskDoneText = String.valueOf(value) + " " + getString(R.string.tv_tasks_done);
-            tvTasksDone.setText(taskDoneText);
-            getTasksDoneAsyncTask = new GetTasksDoneWithAsyncTask(this).execute();
-        }
+    private void setTasksDoneReactively() {
+        compositeDisposable.add(App.getInstance().getPersistantStorage().getPropertyReactively(TASKS_DONE)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<Integer>() {
+                    @Override
+                    public void accept(Integer integer) throws Exception {
+                        String taskDoneText = String.valueOf(integer) + " " + getString(R.string.tv_tasks_done);
+                        tvTasksDone.setText(taskDoneText);
+                    }
+                })
+        );
+    }
+
+    private void updateGraphReactively() {
+        final List<Integer> tasksDonePerDay = Arrays.asList(0, 0, 0, 0, 0, 0, 0);
+        TasksDoneDao tasksDoneDao = database.tasksDoneDao();
+        compositeDisposable.add(tasksDoneDao.getAllReactively()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<List<TasksDone>>() {
+                    @Override
+                    public void accept(List<TasksDone> tasksDone) throws Exception {
+                        for (int i = 0; i < tasksDone.size(); i++) {
+                            if (tasksDone.get(i) != null) {
+                                int count = tasksDone.get(i).getCount();
+                                int day = tasksDone.get(i).getDate() - 1;
+                                tasksDonePerDay.set(day, count);
+                            }
+                        }
+                        ProductivityFragment.this.getGraphView().initList(tasksDonePerDay);
+                        setTasksDoneReactively();
+                    }
+                }));
     }
 
     @Override
     public void onStop() {
-        super.onStop();
-        if (getTasksDoneAsyncTask != null) {
-            getTasksDoneAsyncTask.cancel(true);
+        Log.d(TAG, "ProductivityFragment.onStop");
+        if (compositeDisposable != null && !compositeDisposable.isDisposed()) {
+            compositeDisposable.clear();
         }
+        super.onStop();
     }
 }

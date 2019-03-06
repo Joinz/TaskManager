@@ -2,21 +2,20 @@ package com.joinz.taskmanager.features.main;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.joinz.taskmanager.features.productivity.OnProductivityChangedListener;
-import com.joinz.taskmanager.features.productivity.ProductivityFragment;
+import com.google.android.material.tabs.TabLayout;
 import com.joinz.taskmanager.R;
 
-public class MainActivity extends AppCompatActivity implements OnProductivityChangedListener {
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.FragmentManager;
+import androidx.viewpager.widget.ViewPager;
+
+public class MainActivity extends AppCompatActivity {
 
     Toolbar myToolbar;
     private ViewPager vpTabs;
@@ -73,12 +72,4 @@ public class MainActivity extends AppCompatActivity implements OnProductivityCha
         sendMail.setType("message/rfc822");
         startActivity(Intent.createChooser(sendMail, "Send mail with:"));
     }
-
-    @Override
-    public void onProductivityChanged() {
-        TabsFragmentAdapter adapter = (TabsFragmentAdapter) vpTabs.getAdapter();
-        ProductivityFragment productivityFragment = (((ProductivityFragment) adapter.getItem(1)));
-        productivityFragment.setTasksDone();
-    }
-
 }

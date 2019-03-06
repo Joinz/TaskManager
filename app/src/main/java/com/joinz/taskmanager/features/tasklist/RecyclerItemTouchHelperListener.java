@@ -1,6 +1,6 @@
 package com.joinz.taskmanager.features.tasklist;
 
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 
 public interface RecyclerItemTouchHelperListener {
     void onSwiped(RecyclerView.ViewHolder viewHolder, int direction, int position);

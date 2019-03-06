@@ -2,38 +2,44 @@ package com.joinz.taskmanager.features.tasklist;
 
 
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.joinz.taskmanager.R;
 import com.joinz.taskmanager.db.App;
 import com.joinz.taskmanager.db.AppDatabase;
-import com.joinz.taskmanager.db.PersistantStorage;
 import com.joinz.taskmanager.db.Task;
+import com.joinz.taskmanager.db.TasksDone;
 import com.joinz.taskmanager.features.newtask.NewTaskActivity;
-import com.joinz.taskmanager.features.productivity.OnProductivityChangedListener;
 import com.joinz.taskmanager.features.productivity.ProductivityFragment;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 
 public class TasksFragment extends Fragment implements RecyclerItemTouchHelperListener {
 
+    public static final String TAG = "DEBUG";
     private View rlEmptyPage;
     private RecyclerView rv;
     private SwipeRefreshLayout srTasks;
@@ -41,8 +47,8 @@ public class TasksFragment extends Fragment implements RecyclerItemTouchHelperLi
     private List<Task> tasks = new ArrayList<>();
     private TaskAdapter taskAdapter;
 
-    private AsyncTask<Void, Void, List<Task>> asyncTaskLoadTasks;
-    private MakeTasksDoneInDbWithAsyncTask asyncTaskDoneTasks;
+    private final AppDatabase database = App.getInstance().getDatabase();
+    private CompositeDisposable compositeDisposable;
 
     public TasksFragment() {
         // Required empty public constructor
@@ -68,10 +74,10 @@ public class TasksFragment extends Fragment implements RecyclerItemTouchHelperLi
     @Override
     public void onResume() {
         super.onResume();
-//        loadTasksFromDbWithHandler();
-        loadTasksFromDbWithAsyncTask();
+        compositeDisposable = new CompositeDisposable();
+        loadTasksReactively();
     }
-
+    //TODO ViewObservable.clicks()
     private void initViews(View view) {
         rlEmptyPage = view.findViewById(R.id.rl_empty_page);
         rv = view.findViewById(R.id.recycler_view);
@@ -98,7 +104,7 @@ public class TasksFragment extends Fragment implements RecyclerItemTouchHelperLi
         srTasks.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                loadTasksFromDbWithAsyncTask();
+                //todo sr...
             }
         });
     }
@@ -108,11 +114,10 @@ public class TasksFragment extends Fragment implements RecyclerItemTouchHelperLi
         fabAddTask.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (getActivity() != null) {
-                    startActivity(new Intent(getActivity(), NewTaskActivity.class));
-                }
+                startActivity(new Intent(getActivity(), NewTaskActivity.class));
             }
         });
+
         rv.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
@@ -121,7 +126,6 @@ public class TasksFragment extends Fragment implements RecyclerItemTouchHelperLi
                 }
                 super.onScrollStateChanged(recyclerView, newState);
             }
-
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 if (dy > 0 || dy < 0 && fabAddTask.isShown()) {
@@ -131,33 +135,29 @@ public class TasksFragment extends Fragment implements RecyclerItemTouchHelperLi
         });
     }
 
-    public List<Task> loadTasksFromDb() {
-        FragmentActivity activity = getActivity();
-        if (activity != null) {
-            AppDatabase db = App.getInstance().getDatabase();
-            tasks = db.taskDao().getAll();
-        }
-        return tasks;
+    private void loadTasksReactively() {
+        compositeDisposable.add(database.taskDao().getAllReactively()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<List<Task>>() {
+                    @Override
+                    public void accept(List<Task> tasks) throws Exception {
+                        taskAdapter.setTasks(tasks);
+                        srTasks.setRefreshing(false);
+                        isEmptyPage();
+                    }
+                }));
     }
 
-    public void setTasks (List<Task> tasks) {
-        taskAdapter.setTasks(tasks);
+    private void deleteTasksReactively(Task task, int adapterPosition) {
+        compositeDisposable.add(database.taskDao().deleteReactively(task)
+                .subscribeOn(Schedulers.io())
+                .subscribe());
+        taskAdapter.removeTask(adapterPosition);
         isEmptyPage();
-
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                srTasks.setRefreshing(false);
-            }
-        }, 2000);
     }
 
-    private void loadTasksFromDbWithAsyncTask() {
-        asyncTaskLoadTasks = new LoadFromDbWithAsyncTask(this);
-        asyncTaskLoadTasks.execute();
-    }
-
-    public void isEmptyPage() {
+    private void isEmptyPage() {
         if (taskAdapter.getItemCount() < 1) {
             rlEmptyPage.setVisibility(View.VISIBLE);
         } else {
@@ -167,37 +167,66 @@ public class TasksFragment extends Fragment implements RecyclerItemTouchHelperLi
 
     @Override
     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction, int position) {
-        if (getActivity() != null) {
-            PersistantStorage.init(getActivity());
-            Task task = taskAdapter.getTask(position);
-            App.getInstance().getDatabase().taskDao().delete(task);
-            taskAdapter.removeTask(viewHolder.getAdapterPosition());
+        Task task = taskAdapter.getTask(position);
+        int adapterPosition = viewHolder.getAdapterPosition();
+        deleteTasksReactively(task, adapterPosition);
 
-            isEmptyPage();
-            addTasksDoneToDb();
-            addDoneTaskPref();
-        }
+        addCountAllTaskPrefReactively();
+        addTasksDoneDbReactively();
+        Toast.makeText(getContext(), "Task deleted", Toast.LENGTH_SHORT).show();
     }
 
-    private void addDoneTaskPref() {
-        int tasksDone = PersistantStorage.getProperty(ProductivityFragment.TASKS_DONE);
-        PersistantStorage.addProperty(ProductivityFragment.TASKS_DONE, ++tasksDone);
-        if (getActivity() instanceof OnProductivityChangedListener) {
-            ((OnProductivityChangedListener) getActivity()).onProductivityChanged();
-            Toast.makeText(getContext(), "Task deleted", Toast.LENGTH_SHORT).show();
-        }
+    private void addCountAllTaskPrefReactively() {
+        compositeDisposable.add(App.getInstance().getPersistantStorage().addPropertyReactively(ProductivityFragment.TASKS_DONE)
+                .subscribeOn(Schedulers.io())
+                .subscribe());
     }
 
-    private void addTasksDoneToDb () {
-        asyncTaskDoneTasks = new MakeTasksDoneInDbWithAsyncTask();
-        asyncTaskDoneTasks.execute();
+    private void addTasksDoneDbReactively() {
+        final int today = getToday();
+        compositeDisposable.add(database.tasksDoneDao()
+                .getByDateReactively(getToday())
+                .map(new Function<TasksDone, TasksDone>() {
+                    @Override
+                    public TasksDone apply(TasksDone tasksDone) throws Exception {
+                        return new TasksDone(today, tasksDone.getCount());
+                    }
+                })
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Consumer<TasksDone>() {
+                    @Override
+                    public void accept(TasksDone tasksDone) throws Exception {
+                        int count = tasksDone.getCount() + 1;
+                        setTasksDoneDbReactively(new TasksDone(today, count));
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        Log.d(TAG, throwable.getMessage());
+//                        if (throwable.getMessage().contains("null")) {
+                        setTasksDoneDbReactively(new TasksDone(today, 1));
+//                        }
+                    }
+                }));
+    }
+
+    private void setTasksDoneDbReactively(TasksDone tasksDone) {
+        compositeDisposable.add(database.tasksDoneDao()
+                .insertReactively(tasksDone)
+                .subscribeOn(Schedulers.io())
+                .subscribe());
+    }
+
+    private int getToday() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        return calendar.get(Calendar.DAY_OF_WEEK);
     }
 
     @Override
     public void onStop() {
-        asyncTaskLoadTasks.cancel(true);
-        if (asyncTaskDoneTasks != null) {
-            asyncTaskDoneTasks.cancel(true);
+        if (compositeDisposable != null && !compositeDisposable.isDisposed()) {
+            compositeDisposable.clear();
         }
         super.onStop();
     }

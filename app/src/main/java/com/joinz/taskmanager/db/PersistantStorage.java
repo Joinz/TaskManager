@@ -1,38 +1,42 @@
 package com.joinz.taskmanager.db;
 
-import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
+
+import java.util.concurrent.Callable;
+
+import io.reactivex.Completable;
+import io.reactivex.CompletableEmitter;
+import io.reactivex.CompletableOnSubscribe;
+import io.reactivex.Observable;
 
 public class PersistantStorage {
-    public static final String STORAGE_NAME = "StorageName";
+    private static final String TAG = "PersistantStorage";
+    private SharedPreferences sharedPreferences;
 
-    private static SharedPreferences settings = null;
-    private static SharedPreferences.Editor editor = null;
-    private static Context context = null;
-
-    public static void init(Context cntxt) {
-        context = cntxt;
+    public PersistantStorage() {
+        sharedPreferences = App.getInstance().getSharedPreferences();
     }
 
-    @SuppressLint("CommitPrefEdits")
-    private static void init() {
-        settings = context.getSharedPreferences(STORAGE_NAME, Context.MODE_PRIVATE);
-        editor = settings.edit();
+    public Observable<Integer> getPropertyReactively(final String name) {
+        return Observable.fromCallable(new Callable<Integer>() {
+            @Override
+            public Integer call() throws Exception {
+                Log.d(TAG, "getPropertyReactively");
+                return sharedPreferences.getInt(name, 0);
+            }
+        });
     }
 
-    public static void addProperty(String name, int value) {
-        if (settings == null) {
-            init();
-        }
-        editor.putInt(name, value).commit();
-    }
-
-    public static int getProperty(String name) {
-        if (settings == null) {
-            init();
-        }
-        return settings.getInt(name, 0);
+    public Completable addPropertyReactively(final String name) {
+        return Completable.create(new CompletableOnSubscribe() {
+            @Override
+            public void subscribe(CompletableEmitter emitter) throws Exception {
+                int value = sharedPreferences.getInt(name, 0);
+                sharedPreferences.edit().putInt(name, ++value).apply();
+                Log.d(TAG, "addPropertyReactively");
+            }
+        });
     }
 }
 

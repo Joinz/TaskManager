@@ -1,9 +1,6 @@
 package com.joinz.taskmanager.features.newtask;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -20,7 +17,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.joinz.taskmanager.R;
+import com.joinz.taskmanager.db.App;
+import com.joinz.taskmanager.db.AppDatabase;
 import com.joinz.taskmanager.db.Task;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.schedulers.Schedulers;
 
 public class NewTaskFragment extends Fragment {
 
@@ -31,7 +36,9 @@ public class NewTaskFragment extends Fragment {
     private TextView tvDot;
     private int priority = 0;
     private PriorityDialogFragment priorityDialogFragment;
-    private LoadTaskToDbWithAsyncTask asyncTask;
+
+    final AppDatabase database = App.getInstance().getDatabase();
+    private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     public static NewTaskFragment newInstance() {
         return new NewTaskFragment();
@@ -70,7 +77,7 @@ public class NewTaskFragment extends Fragment {
                 String taskName = etTaskName.getText().toString();
                 Task task = new Task(taskName, priority);
 
-                loadTaskToDbWithAsyncTask(task);
+                insertTaskReactively(task);
             }
         });
 
@@ -100,20 +107,29 @@ public class NewTaskFragment extends Fragment {
         });
     }
 
+    //TODO ViewObservable.clicks() & ViewObservable.text()
+
     public void onPriorityChosen(int priority) {
         this.priority = priority;
         addSpannableDot();
         Toast.makeText(getContext(), "Выбран приоритет: " + priority, Toast.LENGTH_SHORT).show();
     }
 
-    public void loadTaskToDbWithAsyncTask(final Task task) {
-        asyncTask = new LoadTaskToDbWithAsyncTask(this, task);
-        asyncTask.execute();
+    private void insertTaskReactively(final Task task) {
+        compositeDisposable.add(database.taskDao()
+                .insertReactively(task)
+                .subscribeOn(Schedulers.io())
+                .subscribe());
+
+        getActivity().finish();
+        Toast.makeText(getContext(), "Задача " + task.name + " добавлена ", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onStop() {
-        asyncTask.cancel(true);
+        if (compositeDisposable != null && !compositeDisposable.isDisposed()) {
+            compositeDisposable.clear();
+        }
         super.onStop();
     }
 }

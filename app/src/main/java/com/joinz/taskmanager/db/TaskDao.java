@@ -1,28 +1,28 @@
 package com.joinz.taskmanager.db;
 
-import android.arch.persistence.room.Dao;
-import android.arch.persistence.room.Delete;
-import android.arch.persistence.room.Insert;
-import android.arch.persistence.room.Query;
-import android.arch.persistence.room.Update;
 
 import java.util.List;
+
+import androidx.room.Dao;
+import androidx.room.Delete;
+import androidx.room.Insert;
+import androidx.room.Query;
+import io.reactivex.Completable;
+import io.reactivex.Flowable;
+import io.reactivex.Observable;
 
 @Dao
 public interface TaskDao {
 
     @Query("SELECT * FROM Task")
-    List<Task> getAll();
+    Flowable<List<Task>> getAllReactively();
 
     @Query("SELECT * FROM Task WHERE id = :id")
     Task getById(long id);
 
     @Insert
-    void insert(Task task);
-
-    @Update
-    void update(Task task);
+    Completable insertReactively(Task ...task);
 
     @Delete
-    void delete(Task task);
+    Completable deleteReactively(Task task);
 }
